@@ -6,4 +6,4 @@ EKS Clusters Built with only whats required for fast and secure Kubernetes workl
 
 ### Design
 
-![k3eks.png]
+!(k3eks.png)
