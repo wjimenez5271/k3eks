@@ -9,3 +9,9 @@ By using the cloud native design of [k3os](https://k3os.io/) and coupling it wit
 ### Design
 
 ![Image of Architecture](k3eks_v2.png)
+
+### Terraform
+TF plan will create ASG comprised of k3os workers that should bootstrap themselves into an EKS cluster
+
+Eventual goal is to have Terraform create the EKS cluster as well for a "single-click" deploy of a Kubernetes stack. 
+
