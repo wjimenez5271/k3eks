@@ -49,6 +49,45 @@ resource "random_string" "rand" {
   override_special = ""
 }
 
+resource "aws_iam_role" "eks_worker_nodes" {
+  name = "eks_worker_nodes"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+
+  tags = {
+      tag-key = "tag-value"
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "eks-cluster-policy" {
+  role       = "${aws_iam_role.eks_worker_nodes.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "eks-service-policy" {
+  role       = "${aws_iam_role.eks_worker_nodes.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
+}
+
+resource "aws_iam_instance_profile" "eks_worker_nodes" {
+  name = "eks_worker_nodes"
+  role = "${aws_iam_role.eks_worker_nodes.name}"
+}
+
 resource "aws_security_group" "kube-worker" {
   name        = "kube-worker"
   description = "k3eks kube-worker"
@@ -57,7 +96,7 @@ resource "aws_security_group" "kube-worker" {
   ingress {
     from_port   = 22
     to_port     = 22
-    protocol    = "0"
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -75,13 +114,14 @@ resource "aws_launch_configuration" "kube-worker" {
   image_id                    = "${var.aws_ami}"
   instance_type               = "${var.worker_instance_type}"
   security_groups             = ["${aws_security_group.kube-worker.id}"]
-
-  #user_data = "${data.template_cloudinit_config.user_data.rendered}"
+  iam_instance_profile        = "${aws_iam_role.eks_worker_nodes.arn}"
+  user_data = "${file("cloud-config.yml")}"
 
   lifecycle {
     create_before_destroy = true
   }
 }
+
 
 resource "aws_placement_group" "kube" {
   name     = "kube"
@@ -96,7 +136,6 @@ resource "aws_autoscaling_group" "k3eks-test" {
   health_check_type         = "EC2"
   desired_capacity          = "${var.initial_cluster_size}"
   force_delete              = true
-  #placement_group           = "${aws_placement_group.kube.id}"
   launch_configuration      = "${aws_launch_configuration.kube-worker.name}"
   vpc_zone_identifier       = "${var.vpc_subnets}"
 

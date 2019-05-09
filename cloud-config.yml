@@ -1,0 +1,28 @@
+data_sources:
+- aws
+- cdrom
+ssh_authorized_keys:
+- ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDDbvfTTep3TjUUN3sVIYh7MlhyVvGOe7oThNLeUvcnrv4l+DmUL84xFuY0XqL/p51NhD1e1rzKt4uTObhVPgoADK/65rP8uXVTkUmVGqO8A8srIM5tGKqdN8oWGUofSQymS3BfMJGSJsLcc1Jz68GXeJZkCk2DvzAryhRJ3nZavxjFeaolA7qDcZKcNvQbR7t9lhSxjtRvh8b02cMhrlSER5Ylqd0/8iJl59Jaf7xVSziTC8V/FZZ/hIzZZnmAVezmQLcLd+pytHh3Jta5Bc48Spmp/KipyWGRE3xdhk4cxiVjw4bu7lmoZyJ0/+/IYweSweAaZ2AIdYywFbsF4J1/nmkUrItIsQQzVperGHu6obs5HzOWtcAVpne/yrNgZ7CMqBqUqxjPgHOzOI4HhFOnDhTLfc1P/R5O5QNAjB2fmFpwAy04OaA3UPmA6gcktfQRzLrYYvz3SSavHpCVsgQqX/wwvli/S8FQhmRLINfpz2fpRnlIr7Ky//dp5fbIkrmly04tWramoMxtTSlw3AUjh+1ieZk7w7SCcHgKrRnbMPKrG14vGfKTd9Esi3bcSkvcKJMyB+l9r3hICjSO6hP/d0xhjzCqfK8pVRdmgk3g/BtzMSS2RMoO6SRCjZ+XppVEu0tD7Oq31ViD8LJwh3MXVhMUnMsG4ooUorDbk6jzFQ== william@rancher.com
+write_files:
+- enconding: ""
+  content: |-
+    #!/bin/bash
+    echo hi
+  owner: root
+  path: /etc/rc.local
+  permissions: '0755'
+hostname: myhost
+run_cmd:
+- "curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.12.7/2019-03-27/bin/linux/amd64/aws-iam-authenticator"
+- "chmod +x ./aws-iam-authenticator"
+- "mv aws-iam-authenticator /usr/local/bin/aws-iam-authenticator"
+boot_cmd:
+- "echo hi && echo bye"
+init_cmd:
+- "echo hi && echo bye"
+
+k3os:
+  modules:
+  - kvm
+  - nvme
+
