@@ -15,3 +15,11 @@ TF plan will create ASG comprised of k3os workers that should bootstrap themselv
 
 Eventual goal is to have Terraform create the EKS cluster as well for a "single-click" deploy of a Kubernetes stack. 
 
+*Variables to set*
+You will probably need to define the following TF vars (e.g. `terraform.tfvars`)
+
+- aws_ami - AMI for k3os
+- vpc_subnets - subnets that the ASG should deploy to
+- vpc_id - VPC ID
+- aws_profile - Local IAM profile for your `~/.aws/credentials` file. Additioanlly you can change this section of the TF plan to just use the default.
+- aws_credentials_file - Path to AWS credentials file. Usually `~/.aws/credentials`.
